@@ -21,7 +21,7 @@ Example:
 ./get-ir-mwv 0min-1-97C.SPA
 ```
 
-If everything works, the user should now have a new file in the current directory named `<SPA Filename>.CSV` which contains the extracted transmission or absorption data.
+If everything works, the user should now have a new file in the current directory named `<SPA Filename>.CSV` (e.g. `0min-1-97C.SPA.CSV`) which contains the extracted transmission or absorption data.
 
 If a user has multiple SPA files in the same directory, they may move the executable into that directory and process all SPA files at once by typing the following into a bash terminal:
 ```
