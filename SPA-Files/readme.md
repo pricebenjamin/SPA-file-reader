@@ -2,7 +2,8 @@
 
 Using the Sublime Text 3 plugin "HexViewer" in combination with an [online hex converter](http://www.scadacore.com/field-applications/programming-calculators/online-hex-converter/), it appears that transmission data is stored as 32-bit floating point numbers in Mid-Big-Endian format. 
 
-Offset addresses of transmission data:
+Offset addresses of transmission data
+
 |Offset addresses  |
 |:------|---------:|
 |Start  |`0x049E`  |
