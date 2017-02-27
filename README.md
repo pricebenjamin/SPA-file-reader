@@ -12,16 +12,10 @@ Assuming a user has access to the g++ compiler, they may compile and run this pr
 
 1. Download the get-ir-mwv.cpp source file.
 2. From a terminal, change directory to the folder which contains the downloaded source file.
-3. Compile the source file into an executable with the following command:
-```
-g++ get-ir-mwv.cpp -o get-ir-mwv
-```
+3. Compile the source file into an executable with the following command:`g++ get-ir-mwv.cpp -o get-ir-mwv`
 4. Move the SPA file from which data should be extracted into the directory containing the executable.
-5. Run the executable on the SPA file with the following command: (replace <SPA Filename> with the name of your SPA file)
-```
-./get-ir-mwv <SPA Filename>
-```
-    
+5. Run the executable on the SPA file with the following command: `./get-ir-mwv <SPA Filename>`
+
 Example:
 ```
 ./get-ir-mwv 0min-1-97C.SPA
@@ -34,5 +28,5 @@ If a user has multiple SPA files in the same directory, they may move the execut
 for f in *.SPA
   do
     ./get-ir-mwv f
-  end
+  done
 ```
