@@ -4,10 +4,10 @@ Using the Sublime Text 3 plugin "HexViewer" in combination with an [online hex c
 
 Offset addresses of transmission data
 
-|Offset addresses  |
-|:------|---------:|
-|Start  |`0x049E`  |
-|End    |`0x036929`|
+|Offset addresses  ||
+|:------|----------:|
+|Start  |`0x049E`   |
+|End    |`0x036929` |
 
 Each individual transmission datum is 4 bytes, yielding a total of 55,587 data points.
 
