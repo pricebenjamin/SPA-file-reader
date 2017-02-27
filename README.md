@@ -8,7 +8,7 @@ Currently, this program is entirely capable of converting the SPA files found in
 
 ## Using this program
 
-Assuming a user has access to the g++ compiler, they may compile and run this program by doing the following:
+Assuming a user has access to the g++ compiler, they may compile and run this program by following the provided steps.
 
 1. Download the get-ir-mwv.cpp source file.
 2. From a terminal, change directory to the folder which contains the downloaded source file.
@@ -23,7 +23,7 @@ Example:
 
 If everything works, the user should now have a new file in the current directory named `<SPA Filename>.CSV` (e.g. `0min-1-97C.SPA.CSV`) which contains the extracted transmission or absorption data.
 
-If a user has multiple SPA files in the same directory, they may move the executable into that directory and process all SPA files at once by typing the following into a bash terminal:
+If a user has multiple SPA files in the same directory, they may move the executable into that directory and process all SPA files at once by entering the following into a terminal the bash shell:
 ```
 for FILE in *.SPA
   do
