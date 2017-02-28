@@ -15,13 +15,16 @@ using namespace std;
 void printUsage(char* PROG_NAME);
 bool canOpenFile(char* FILENAME);
 void readSPAFile(char* SPA_FILENAME, float IR_Data[], int length);
+const char* appendCSV(char* SPA_FILENAME);
 void printToCSV(const char* CSV_FILENAME, float IR_Data[], int length); // No idea why CSV_FILENAME needed to be const...
 
-// Global constants:
-const int HEX_SEEK = 0x49C;		// Hex address of first datum in SPA file
-const int SIZE = 55587;			// Number of data in SPA file
-const float MAX_WAVENUMBER =  3999.9912;	// inverse cm; spectrometer measures from ~600 cm^-1 to ~4000 cm^-1
-const float STEP_SIZE = 0.060266;			// inverse cm; distance between sequential data
+// Global constants: (these depend on my personal SPA files)
+const int HEX_START = 0x49C;		// Hex address just before first byte of first datum in SPA file
+const int HEX_END = 0x036929;		// Hex address of last byte of last datum
+const int SIZE = (HEX_END - HEX_START) / 4;	// Number of data in SPA file (4 bytes per datum)
+const float MAX_WAVENUMBER =  3999.9907;	// inverse cm
+const float MIN_WAVENUMBER = 649.9812;		// inverse cm
+const float STEP_SIZE = (MAX_WAVENUMBER - MIN_WAVENUMBER) / (SIZE - 1);	// inverse cm; distance between sequential data
 
 int main(int argc, char* argv[]) {	
 	// argc = (number of command-line arguments passed to this program)
@@ -31,23 +34,18 @@ int main(int argc, char* argv[]) {
 				char* SPA_FILENAME = argv[1];
 				if(canOpenFile(SPA_FILENAME)) {
 					float IR_Data[SIZE];
-					for(int i = 0; i < SIZE; i++) IR_Data[i] = 0; // Initialize array with zeros
+					// for(int i = 0; i < SIZE; i++) IR_Data[i] = 0; // Initialize array with zeros
 					readSPAFile(SPA_FILENAME, IR_Data, SIZE);
-					string spaString = SPA_FILENAME;
-					const char* CSV_FILENAME = spaString.append(".csv").c_str();
-					// Made const in order to fix "invalid conversion from 'const char*' to 'char*' [-fpermissive]" error
-					printToCSV(CSV_FILENAME, IR_Data, SIZE);
+					printToCSV(appendCSV(SPA_FILENAME), IR_Data, SIZE);
 				} else {
 					cerr << "Unable to open " << SPA_FILENAME << "." << endl;
 					return 1;
 				}
-			}
-			break;
+			} break;
 		default:
 			printUsage(argv[0]); // argv[0] is the name of the compiled program when executed from command-line
 			return 1;
 	}
-
     return 0;
 }
 
@@ -71,11 +69,18 @@ void readSPAFile(char* SPA_FILENAME, float IR_Data[], int length) {
     // Remember: we already ensured that this file can be opened in main()
     ifstream spaInputFile (SPA_FILENAME, ios::in|ios::binary);
     // Go to first datum, then read data into IR_Data
-    spaInputFile.seekg(HEX_SEEK, ios::beg);
-    spaInputFile.read(reinterpret_cast<char*>(IR_Data), length); // sizeof(IR_Data));
+    spaInputFile.seekg(HEX_START, ios::beg);
+    spaInputFile.read(reinterpret_cast<char*>(IR_Data), length*4); // 4 bytes per datum
     // We must reinterpret IR_Data as a character pointer in order to correctly read in the data
     spaInputFile.close();
     return;
+}
+
+// Append ".CSV" to SPA_FILENAME
+// Made const in order to fix "invalid conversion from 'const char*' to 'char*' [-fpermissive]" error
+const char* appendCSV(char* SPA_FILENAME) {
+	string spaString = SPA_FILENAME;
+	return spaString.append(".CSV").c_str();
 }
 
 // Print array to CSV file
