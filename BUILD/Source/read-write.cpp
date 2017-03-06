@@ -1,10 +1,4 @@
-#include <iostream>
-#include <cstdlib>
-#include <cmath>
-#include <fstream>
-#include <string>
-
-using namespace std;
+#include "header.h"
 
 // Ensure that ub > lb, ub <= MAX_WAVENUMBER, lb >= MIN_WAVENUMBER, etc...
 void checkBounds(int* upperBound, int* lowerBound, int max, int min)
