@@ -2,7 +2,7 @@
 #include <fstream>		// Open, read, create, and edit files
 #include <cstdlib>		// exit()
 #include <string>		// to_string()
-#include <cmath>		// pow()
+#include <cmath>		// pow(), abs()
 
 using namespace std;
 
@@ -22,9 +22,9 @@ int charToInt(char);
 string truncateStrAt(string str, char truncAt);
 int strToInt(string numberAsString);
 void checkBounds(int* upperBound, int* lowerBound);
-int wavenumToIndex(int wavenumber);
-void printToCSV(const char* CSV_FILENAME, float IR_Data[], int length);
-void printToCSV(const char* CSV_FILENAME, float IR_Data[], int length, int ub, int lb);
+int wavenumToIndex(int wavenumber, float wavenumberArray[]);
+void printToCSV(const char* CSV_FILENAME, float IR_Data[], float wavenumber[], int length);
+void printToCSV(const char* CSV_FILENAME, float IR_Data[], float wavenumber[], int length, int ub, int lb);
 
 // Global constants: (these depend on my personal SPA files)
 const int HEX_START = 0x49C;		// Hex address just before first byte of first datum in SPA file
@@ -38,29 +38,33 @@ int main(int argc, char* argv[])
 {	
 	// argc = (number of command-line arguments passed to this program)
 	// argv = (array of pointers to the command-line arguments)
-	float IR_Data[SIZE];
+	float IR_Data[SIZE];	// Array to store % transmission values from input file
+	float wavenumber[SIZE]; // Array to store corresponding wavenumber (assumed to be the same for all input files)
+	for(int i = 0; i < SIZE; i++)
+		wavenumber[i] = MAX_WAVENUMBER - (STEP_SIZE * i); // Initialize wavenumber[]
+
 	switch(argc)
 	{
 		case 1: printUsage(argv[0]); break;
-		case 2: { // Change scope to protect variables: prevents 'crosses initialization' error
+		case 2: { // Usage: PROG_NAME <SPA filename>
+				// Change scope to protect variables: prevents 'crosses initialization' error
 				char* SPA_FILENAME = argv[1];
 				readSPAFile(SPA_FILENAME, IR_Data, SIZE);
-				printToCSV(appendStr(SPA_FILENAME, ".CSV"), IR_Data, SIZE);
+				printToCSV(appendStr(SPA_FILENAME, ".CSV"), IR_Data, wavenumber, SIZE);
 				} break;
-		case 6: { // ./get-ir-mwv -u <upper wavenumber> -l <lower wavenumber> <SPA filename>
-					// Change scope to protect variables
-					string upperBoundStr = argv[2]; // Need to convert from char[] to string for strToInt(string)
-					string lowerBoundStr = argv[4];
-					int upperBound = strToInt(upperBoundStr);
-					int lowerBound = strToInt(lowerBoundStr);
-					checkBounds(&upperBound, &lowerBound);
-					char* SPA_FILENAME = argv[5];
-					readSPAFile(SPA_FILENAME, IR_Data, SIZE);
-					string ubStr = to_string(upperBound);
-					string lbStr = to_string(lowerBound);
-					string dot = ".";
-					const char* suffix = dot.append(ubStr).append("-").append(lbStr).append(".CSV").c_str();
-					printToCSV(appendStr(SPA_FILENAME, suffix), IR_Data, SIZE, upperBound, lowerBound);
+		case 6: { // Usage: PROG_NAME -u <upper wavenumber> -l <lower wavenumber> <SPA filename>
+				string upperBoundStr = argv[2]; // Need to convert from char[] to string for strToInt(string)
+				string lowerBoundStr = argv[4];
+				int upperBound = strToInt(upperBoundStr);
+				int lowerBound = strToInt(lowerBoundStr);
+				checkBounds(&upperBound, &lowerBound);
+				char* SPA_FILENAME = argv[5];
+				readSPAFile(SPA_FILENAME, IR_Data, SIZE);
+				string ubStr = to_string(upperBound);
+				string lbStr = to_string(lowerBound);
+				string dot = ".";
+				const char* suffix = dot.append(ubStr).append("-").append(lbStr).append(".CSV").c_str();
+				printToCSV(appendStr(SPA_FILENAME, suffix), IR_Data, wavenumber, SIZE, upperBound, lowerBound);
 				} break;
 		default: // ./get-ir-mwv -u <upper> -l <lower> <SPA file 1> <SPA file 2> ... // TODO
 			printUsage(argv[0]); // argv[0] is the name of the compiled program when executed from command-line
@@ -72,7 +76,9 @@ int main(int argc, char* argv[])
 // Print the correct usage of this program
 void printUsage(char* PROG_NAME)
 {
-	cerr << "Usage: " << PROG_NAME << "  [-u <upper wavenumber> -l <lower wavenumber>] <SPA filename>" << endl;
+	cerr << "Usage: " << PROG_NAME << "  [-u <upper wavenumber>] [-l <lower wavenumber>] <SPA filename> [<SPA filename 2> ... ]\n";
+	cerr << "    [ (-u | --upper-bound) <number> ]: <number> is an integer which specifies the upper bound of the interval to be exported to a CSV file\n";
+	cerr << "    [ (-l | --lower-bound) <number> ]: <number> is an integer which specifies the lower bound of the interval to be exported to a CSV file\n";
 	return;
 }
 
@@ -112,33 +118,33 @@ const char* appendStr(char* SPA_FILENAME, const char* str)
 }
 
 // Print array to CSV file
-void printToCSV(const char* CSV_FILENAME, float IR_Data[], int length)
+void printToCSV(const char* CSV_FILENAME, float IR_Data[], float wavenumber[], int length)
 {
     ofstream csvOutputFile (CSV_FILENAME, ios::out);
     if(csvOutputFile.is_open()){
 	    for(int a = 0; a < length; a++) {
-	        csvOutputFile << MAX_WAVENUMBER - STEP_SIZE*a << ", " << IR_Data[a] << endl;
+	        csvOutputFile << wavenumber[a] << ", " << IR_Data[a] << endl;
 	    }
 	    csvOutputFile.close();
 	} else {
-		cerr << "Error: printToCSV(const char*, float, int): Unable to open output file " << CSV_FILENAME << "." << endl;
+		cerr << "Error: printToCSV(const char*, float[], float[], int): Unable to open output file " << CSV_FILENAME << "." << endl;
 		exit(1);
 	}
 	return;
 }
 // Overloading printToCSV
-void printToCSV(const char* CSV_FILENAME, float IR_Data[], int length, int upperBound, int lowerBound)
+void printToCSV(const char* CSV_FILENAME, float IR_Data[], float wavenumber[], int length, int upperBound, int lowerBound)
 {
-	int lowerIndex = wavenumToIndex(upperBound); // Woops...that's confusing
-	int upperIndex = wavenumToIndex(lowerBound); // Higher wavenumbers have lower indices! That's how the data is ordered.
+	int lowerIndex = wavenumToIndex(upperBound, wavenumber); // Woops...that's confusing
+	int upperIndex = wavenumToIndex(lowerBound, wavenumber); // Higher wavenumbers have lower indices! That's how the data is ordered.
     ofstream csvOutputFile (CSV_FILENAME, ios::out);
     if(csvOutputFile.is_open()){
 	    for(int a = lowerIndex; a < upperIndex + 1; a++) {
-	        csvOutputFile << MAX_WAVENUMBER - STEP_SIZE*a << ", " << IR_Data[a] << endl;
+	        csvOutputFile << wavenumber[a] << ", " << IR_Data[a] << endl;
 	    }
 	    csvOutputFile.close();
 	} else {
-		cerr << "Error: printToCSV(const char*, float, int, int, int): Unable to open output file " << CSV_FILENAME << "." << endl;
+		cerr << "Error: printToCSV(const char*, float[], float[], int, int, int): Unable to open output file " << CSV_FILENAME << "." << endl;
 		exit(1);
 	}
 	return;
@@ -228,14 +234,10 @@ void checkBounds(int* upperBound, int* lowerBound)
 }
 
 // Convert a wavenumber to nearest index
-int wavenumToIndex(int wavenumber)
+int wavenumToIndex(int wavenumber, float wavenumberArray[])
 {
 	//cout << "wavenumToIndex(int): passed argument 'wavenumber' = " << wavenumber << "." << endl;
 	int candidateIndex = 0;
-	// Create array of wavenumbers where wavenumber[a] corresponds to IR_Data[a]
-	float wavenumberArray[SIZE];
-    for(int i = 0; i < SIZE; i++)
-    	wavenumberArray[i] = MAX_WAVENUMBER - STEP_SIZE*i; // TODO: make MAX_WN - STEP*i a function? It's used in multiple places...
     // Find the value in wavenumberArray that is closest to wavenumber
     for(int i = 0; i < SIZE; i++)
     {
