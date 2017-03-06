@@ -80,7 +80,6 @@ int main(int argc, char* argv[])
 	// Begin parsing command-line arguments based on flags
 	if(lowerBoundSpecified && upperBoundSpecified)
 	{ // ======================================== BEGIN SCENARIO: both bounds given ===================================
-
 		//cout << "Info: main(): lowerBoundSpecified && upperBoundSpecified == true." << endl;
 		if(argc < 5) // Not enough arguments: flags were given, but values were not provided
 		{
