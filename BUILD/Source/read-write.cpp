@@ -1,40 +1,5 @@
 #include "header.h"
 
-// Ensure that ub > lb, ub <= MAX_WAVENUMBER, lb >= MIN_WAVENUMBER, etc...
-void checkBounds(int* upperBound, int* lowerBound, int max, int min)
-{
-	if(*upperBound == *lowerBound) // Dereference and compare
-	{
-		cerr << "Error: checkBounds(int,int): upperbound equals lowerbound." << endl;
-		exit(1);
-	} else if(*upperBound < *lowerBound) {// Swap value stored in upperbound with value in lowerbound
-		int temp = *upperBound;
-		*upperBound = *lowerBound;
-		*lowerBound = temp;
-	}
-	// Once swapped, check for invalid bounds
-	if(*upperBound > max && *lowerBound < min) {
-		cerr << "Error: checkBounds(int,int): upperbound > MAX_WAVENUMBER and lowerbound < MIN_WAVENUMBER." << endl;
-		exit(1);
-	} else if(*upperBound > max) {
-		cerr << "Error: checkBounds(int,int): upperbound > MAX_WAVENUMBER." << endl;
-		exit(1);
-	} else if(*lowerBound < min) {
-		cerr << "Error: checkBounds(int,int): lowerbound < MIN_WAVENUMBER." << endl;
-		exit(1);
-	}
-}
-
-void checkIfNull(void* pointer, const char* callingFunc, const char* ptrDef)
-{
-	if(pointer == nullptr)
-	{
-		cerr << "Error: " << callingFunc << ": unable to allocate memory for " << ptrDef << ".\n";
-		exit(1);
-	}
-	return;
-}
-
 // Verify that the SPA file can be opened
 bool canOpenFile(char* FILENAME)
 {
@@ -68,34 +33,6 @@ const char* appendStr(char* SPA_FILENAME, const char* str)
 {
 	string spaString = SPA_FILENAME;
 	return spaString.append(str).c_str();
-}
-
-// Convert a wavenumber to nearest index
-int wavenumToIndex(int wavenumber, float wavenumberArray[], int size)
-{
-	//cout << "wavenumToIndex(int): passed argument 'wavenumber' = " << wavenumber << "." << endl;
-	int candidateIndex = 0;
-    // Find the value in wavenumberArray that is closest to wavenumber
-    for(int i = 0; i < size; i++)
-    {
-    	if(wavenumber < wavenumberArray[i]) 
-    		candidateIndex = i;
-    	else 
-    		break;
-    } // candidateIndex now stores the index of the wavenumberArray value which is JUST GREATER THAN wavenumber
-    float leftDistance = abs(wavenumber - wavenumberArray[candidateIndex]);
-    float rightDistance = abs(wavenumber - wavenumberArray[candidateIndex + 1]);
-    if(leftDistance == rightDistance || leftDistance < rightDistance)
-    {
-    	//cout << "Found candidateIndex: " << candidateIndex << " with corresponding value " << wavenumberArray[candidateIndex] << "." << endl;
-    	return candidateIndex;
-    }
-    else
-    {
-    	//cout << "Found candidateIndex: " << candidateIndex + 1 << " with corresponding value " << wavenumberArray[candidateIndex + 1] << "." << endl;
-    	return candidateIndex + 1; 	// Note: candidateIndex cannot ever be the last index;
-    								// this is prevented by truncation and checkBounds()
-    }
 }
 
 // Print array to CSV file
@@ -171,3 +108,10 @@ void printToCSV
 	}
 	return;
 }
+
+const char* createCSVFilename(const char* filename, string ubStr, string lbStr)
+{
+	string str = filename;
+	return str.append(".").append(ubStr).append("-").append(lbStr).append(".CSV").c_str();
+}
+
