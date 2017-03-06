@@ -103,11 +103,11 @@ void checkArgIndex(const int NUM_OPT_ARGS, int optionalArgIndices[], int maxInde
         }
 }
 
-void checkArgOrder(const int NUM_OPT_ARGS, bool* optionalArgs[], int optionalArgIndices[], int argc, char* argv[])
+int checkArgOrder(const int NUM_OPT_ARGS, bool* optionalArgs[], int optionalArgIndices[], int argc, char* argv[])
 {
     int numOptArgsSpecified = 0;
     for(int i = 0; i < NUM_OPT_ARGS; i++)
         if(*optionalArgs[i] == true) numOptArgsSpecified++;
     checkArgIndex(NUM_OPT_ARGS, optionalArgIndices, numOptArgsSpecified, argc, argv);
-    return;
+    return numOptArgsSpecified;
 }
