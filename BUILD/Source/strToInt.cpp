@@ -1,6 +1,6 @@
-#include <iostream>
-#include <cstdlib>
 #include <string>
+#include <cstdlib>
+#include <iostream>
 #include <cmath>
 
 using namespace std;
@@ -37,6 +37,34 @@ string truncateStrAt(string str, char truncAt)
 		if(str[i] == truncAt) return str.substr(0,i);
 	// If we're here, truncAt was not found in string
 	return str;
+}
+
+string getStrAfter(string str, char dividingChar)
+{
+    string remainder = "***NullString***";
+    bool dividingCharFound = false;
+    int length = str.length();
+    for(int i = 0; i < length; i++)
+    {
+        if(str[i] == dividingChar)
+        {
+            dividingCharFound = true;
+            if(i == length - 1) 
+            {
+                remainder = ""; // dividingChar is the end of the string
+                cerr << "Warning: getStrAfter(string, char): returning empty string." << endl;
+            }
+            else remainder = str.substr(i+1); // Read str from index i+1 to the end
+            break;
+        }
+    }
+
+    if(dividingCharFound) return remainder;
+    else
+    {
+        cerr << "Error: getStrAfter(string, char): character '" << dividingChar << "' not found in string '" << str <<"'." << endl;
+        exit(1);
+    }
 }
 
 //
