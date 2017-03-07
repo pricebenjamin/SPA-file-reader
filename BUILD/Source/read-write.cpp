@@ -12,6 +12,7 @@ bool canOpenFile(char* FILENAME)
 // Read the contents of the SPA file into an array
 void readSPAFile(char* SPA_FILENAME, float IR_Data[], int length, int start)
 {
+	const char* funcDef = "void readSPAFile(char*, float [], int, int)";
     if(canOpenFile(SPA_FILENAME))
     {
 	    ifstream spaInputFile (SPA_FILENAME, ios::in|ios::binary);
@@ -21,7 +22,7 @@ void readSPAFile(char* SPA_FILENAME, float IR_Data[], int length, int start)
 	    // We must reinterpret IR_Data as a character pointer in order to correctly read in the data
 	    spaInputFile.close();
 	} else {
-		cerr << "Error: Unable to open " << SPA_FILENAME << "." << endl;
+		cerr << "Error: " << funcDef << ": Unable to open SPA file '" << SPA_FILENAME << "'." << endl;
 		exit(1);
 	}
 	return;
@@ -38,6 +39,7 @@ const char* appendStr(char* SPA_FILENAME, const char* str)
 // Print array to CSV file
 void printToCSV(const char* CSV_FILENAME, float IR_Data[], float wavenumber[], int length)
 {
+	const char* funcDef = "void printToCSV(const char*, float [], float [], int)";
     ofstream csvOutputFile (CSV_FILENAME, ios::out);
     if(csvOutputFile.is_open()){
 	    for(int a = 0; a < length; a++) {
@@ -45,7 +47,8 @@ void printToCSV(const char* CSV_FILENAME, float IR_Data[], float wavenumber[], i
 	    }
 	    csvOutputFile.close();
 	} else {
-		cerr << "Error: printToCSV(const char*, float[], float[], int): Unable to open output file " << CSV_FILENAME << "." << endl;
+		cerr << "Error: " << funcDef << ": Unable to open CSV output file " << CSV_FILENAME << "." << endl;
+		cerr << "    Does the file already exist?" << endl;
 		exit(1);
 	}
 	return;
