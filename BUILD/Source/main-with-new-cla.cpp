@@ -32,6 +32,7 @@ void printUsage(char* PROG_NAME)
          << "    constant correction to each spectrum (saved in separate file), and take the average\n"
          << "    of multiple spectra by grouping files (saved in separate file).\n"
          << "OPTIONS:\n"
+         << "    -h, -?, --help                 Print this usage statement.\n"
 	     << "    -u=N1, --upper-bound=N1        Defines the upper bound N1 of the wavenumber region\n"
          << "                                     over which data will be saved.\n"
 	     << "    -l=N2, --lower-bound=N2        Defines the lower bound N2 of the wavenumber region\n"
@@ -51,6 +52,22 @@ int main(int argc, char* argv[])
 {
     // Expected usage of this program:
     // ./PROG_NAME [-u=<upper bound>] [-l=<lower bound>] [--calculate-const-corr=<bound>-<bound>] [--group-files=<group size>] <SPA filename 1> <SPA filename 2> ...
+
+    // Check for 'help' flags
+    if(argc < 2)
+    {
+    	printUsage(argv[0]);
+    	return 0;
+    }
+    else
+    {
+	    string argv_1 = argv[1];
+	    if(argv_1 == "-h" || argv_1 == "-?" || argv_1 == "--help")
+	    {
+	    	printUsage(argv[0]);
+	    	return 0;
+	    }
+	}
 
     const int NUM_OPT_ARGS = 4;
     const int MAX_OPT_ARG_INDEX = 4;
@@ -78,6 +95,7 @@ int main(int argc, char* argv[])
     const int NUM_SPA_FILES = argc - (numOptArgsGiven + 1);
 
     // Get data from SPA files
+    // If no acceptable optional arguments were used, we will assume that all arguments are SPA files, and begin reading them in
     char** SPA_FILENAME = createSPAFileArray(NUM_SPA_FILES, numOptArgsGiven, argv, "char** SPA_FILENAME");
     float** IR_DATA = createFloatArray(NUM_SPA_FILES, SIZE, "float** IR_DATA");
     for(int i = 0; i < NUM_SPA_FILES; i++)
@@ -126,6 +144,7 @@ int main(int argc, char* argv[])
     // Output requested data
     if(optionalArgsUsed)
     {
+    	//cout << "Outputting requested data: optionalArgsUsed has value of " << (optionalArgsUsed ? "True" : "False") << endl;
         if(upperBoundSpecified && lowerBoundSpecified)
         {
             // Create raw data CSV
