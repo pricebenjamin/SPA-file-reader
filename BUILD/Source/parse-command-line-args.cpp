@@ -19,6 +19,7 @@ const char VAL_VAL_DIV_CHAR = '-';
 
 void checkIfAlreadyGiven(int argIndex, bool* optionalArgs[], bool* usedOptionalArgs)
 {
+    const char* funcDef = "void checkIfAlreadyGiven(int, bool* [], bool*)";
     *usedOptionalArgs = true;
     if(*optionalArgs[argIndex] == false)
         *optionalArgs[argIndex] = true;
@@ -27,19 +28,19 @@ void checkIfAlreadyGiven(int argIndex, bool* optionalArgs[], bool* usedOptionalA
         switch(argIndex)
         {
             case UB_ARG_INDEX: 
-                cerr << "Error: checkIfAlreadyGiven(int, bool* [], bool*): Upper bound specified more than once.\n";
+                cerr << "Error: " << funcDef << ": Upper bound specified more than once.\n";
                 break;
             case LB_ARG_INDEX:
-                cerr << "Error: checkIfAlreadyGiven(int, bool* [], bool*): Lower bound specified more than once.\n";
+                cerr << "Error: " << funcDef << ": Lower bound specified more than once.\n";
                 break;
             case CONST_CORR_ARG_INDEX:
-                cerr << "Error: checkIfAlreadyGiven(int, bool* [], bool*): Calculate constant correction flag used more than once.\n";
+                cerr << "Error: " << funcDef << ": Calculate constant correction flag used more than once.\n";
                 break;
             case GROUP_FILES_ARG_INDEX:
-                cerr << "Error: checkIfAlreadyGiven(int, bool* [], bool*): Group files flag used more than once.\n";
+                cerr << "Error: " << funcDef << ": Group files flag used more than once.\n";
                 break;
             default:
-                cerr << "Error: checkIfAlreadyGiven(int, bool* [], bool*): invalid argument index.\n";
+                cerr << "Error: " << funcDef << ": invalid argument index.\n";
         }
         exit(1);
     }
@@ -86,6 +87,7 @@ bool usingOptionalArgs
 
 void checkArgIndex(const int NUM_OPT_ARGS, int optionalArgIndices[], int maxIndex, int argc, char* argv[])
 {
+    const char* funcDef = "void checkArgIndex(const int, int [], int, int, char* [])";
     for(int i = 0; i < NUM_OPT_ARGS; i++)
         if(optionalArgIndices[i] > maxIndex)
         {
@@ -97,7 +99,7 @@ void checkArgIndex(const int NUM_OPT_ARGS, int optionalArgIndices[], int maxInde
                 case CONST_CORR_ARG_INDEX: optArg = CONST_CORR_STR; break;
                 case GROUP_FILES_ARG_INDEX: optArg = GROUP_FILES_STR; break;
             }
-            cerr << "Error: checkArgIndex(int, int [], int): index of optional argument '" << optArg << "' is larger than expected.\n\n";
+            cerr << "Error: " << funcDef << ": index of optional argument '" << optArg << "' is larger than expected.\n\n";
             printUsage(argv[0]);
             exit(1);
         }
