@@ -133,7 +133,7 @@ int main(int argc, char* argv[])
     if(upperBoundSpecified && lowerBoundSpecified) 
         checkBound(&upperBound, &lowerBound, MAX_WAVENUMBER, MIN_WAVENUMBER);
     else if(upperBoundSpecified || lowerBoundSpecified) 
-        upperBoundSpecified ? checkBound(upperBound, MAX_WAVENUMBER, true) : checkBound(lowerBound, MIN_WAVENUMBER, false);
+        upperBoundSpecified ? checkBound(upperBound, MAX_WAVENUMBER, MIN_WAVENUMBER) : checkBound(lowerBound, MAX_WAVENUMBER, MIN_WAVENUMBER);
     
     int ubCorr = ( useConstCorr ?
         strToInt(truncateStrAt(getStrAfter(string(argv[optionalArgIndices[CONST_CORR_ARG_INDEX]]), ARG_VAL_DIV_CHAR), VAL_VAL_DIV_CHAR)) : 0 );

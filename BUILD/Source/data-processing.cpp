@@ -31,21 +31,20 @@ void checkBound(int* upperBound, int* lowerBound, int max, int min)
 	}
 }
 
-void checkBound(int bound, int MAX_OR_MIN_WAVENUM, bool isUpperBound)
+void checkBound(int bound, int MAX_WAVENUMBER, int MIN_WAVENUMBER)
 {
-	const char* funcDef = "checkBound(int, int, bool)";
-	if(isUpperBound)
-		if(bound > MAX_OR_MIN_WAVENUM)
-		{
-			cerr << "Error: " << funcDef << ": upper bound is greater than max wavenumber.\n";
-			exit(1);
-		}
-	else
-		if(bound < MAX_OR_MIN_WAVENUM)
-		{
-			cerr << "Error: " << funcDef << ": lower bound is less than min wavenumber.\n";
-			exit(1);
-		}
+	const char* funcDef = "void checkBound(int, int, int)";
+    if(bound >= MAX_WAVENUMBER)
+    {
+        cerr << "Error: " << funcDef << ": bound = " << bound << " is greater than or equal to max wavenumber " << MAX_WAVENUMBER << ".\n";
+        exit(1);
+    }
+    else if(bound <= MIN_WAVENUMBER)
+    {
+        cerr << "Error: " << funcDef << ": bound = " << bound << " is less than or equal to min wavenumber " << MIN_WAVENUMBER << ".\n";
+        exit(1);
+    }
+    return;
 }
 
 // Convert a wavenumber to nearest index

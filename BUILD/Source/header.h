@@ -38,7 +38,7 @@ float** createFloatArray(int numCols, int numRows, const char* ptrDef);
 char** createAvgDataColTitles(int numGroups, int groupSize, char** SPA_FILENAME, const char* ptrDef);
 // data-processing.cpp
 void checkBound(int* upperBound, int* lowerBound, int max, int min);
-void checkBound(int bound, int MAX_OR_MIN_WAVENUM, bool isUpperBound);
+void checkBound(int bound, int MAX_WAVENUMBER, int MIN_WAVENUMBER);
 int wavenumToIndex(int wavenumber, float wavenumberArray[], int size);
 void computeAverages(float** AVG_DATA, float** IR_DATA, int numGroups, int groupSize, int SIZE);
 void computeConstCorr(float** CORR_DATA, float** IR_DATA, int NUM_SPA_FILES, float WAVENUMBER[], int SIZE, int ubCorr, int lbCorr);
