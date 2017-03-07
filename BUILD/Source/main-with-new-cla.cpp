@@ -146,7 +146,7 @@ int main(int argc, char* argv[])
     {
     	//cout << "Outputting requested data: optionalArgsUsed has value of " << (optionalArgsUsed ? "True" : "False") << endl;
         if(upperBoundSpecified && lowerBoundSpecified)
-        {
+        { // SCENARIO: both bounds given
             // Create raw data CSV
             const char* RAW_CSV_FILENAME = createCSVFilename("combinedRawData", ubStr, lbStr);
             printToCSV(RAW_CSV_FILENAME, SPA_FILENAME, IR_DATA, WAVENUMBER, NUM_SPA_FILES, SIZE, upperBound, lowerBound);
@@ -173,19 +173,40 @@ int main(int argc, char* argv[])
             }
         }
         else if (upperBoundSpecified || lowerBoundSpecified)
-        {
+        { // SCENARIO: one bound given
             cerr << "Error: main(): scenario: one bound specified.\n";
             cerr << "    This scenario is still under development.\n";
         }
         else
-        {
-            cerr << "Error: main(): scenario: no bounds specified.\n";
-            cerr << "    This scenario is still under development.\n";
+        { // SCENARIO: no bounds given
+            const char* RAW_CSV_FILENAME = "combinedRawData.fullSpectrum.CSV";
+            printToCSV(RAW_CSV_FILENAME, SPA_FILENAME, IR_DATA, WAVENUMBER, NUM_SPA_FILES, SIZE);
+
+            if(groupFiles)
+            {
+                computeAverages(AVG_DATA, IR_DATA, numGroups, groupSize, SIZE);
+                const char* AVG_CSV_FILENAME = "averagedData.fullSpectrum.CSV";
+                printToCSV(AVG_CSV_FILENAME, AVG_DATA_COL_TITLES, AVG_DATA, WAVENUMBER, numGroups, SIZE);
+            }
+
+            if(useConstCorr)
+            {
+                computeConstCorr(CORR_DATA, IR_DATA, NUM_SPA_FILES, WAVENUMBER, SIZE, ubCorr, lbCorr);
+                const char* CORR_CSV_FILENAME = "constCorrData.fullSpectrum.CSV";
+                printToCSV(CORR_CSV_FILENAME, SPA_FILENAME, CORR_DATA, WAVENUMBER, NUM_SPA_FILES, SIZE);
+            }
+            
+            if(useConstCorr && groupFiles)
+            {
+                computeAverages(AVG_DATA, CORR_DATA, numGroups, groupSize, SIZE);
+                const char* AVG_CORR_CSV_FILENAME = "averagedCorrData.fullSpectrum.CSV";
+                printToCSV(AVG_CORR_CSV_FILENAME, AVG_DATA_COL_TITLES, AVG_DATA, WAVENUMBER, numGroups, SIZE);
+            }
         }
     }
     else
-    {
-        const char* RAW_CSV_FILENAME = "combinedRawData.CSV";
+    { // SCENARIO: No optional arguments given
+        const char* RAW_CSV_FILENAME = "combinedRawData.fullSpectrum.CSV";
         printToCSV(RAW_CSV_FILENAME, SPA_FILENAME, IR_DATA, WAVENUMBER, NUM_SPA_FILES, SIZE);
     }
 
