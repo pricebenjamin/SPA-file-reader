@@ -54,18 +54,37 @@ void printToCSV(const char* CSV_FILENAME, float IR_Data[], float wavenumber[], i
 	return;
 }
 
-void printToCSV(const char* CSV_FILENAME, float IR_Data[], float wavenumber[], int length, int upperBound, int lowerBound)
+void printToCSV
+(
+	const char* CSV_FILENAME,
+	char** SPA_FILENAME,
+	float** IR_Data,
+	float wavenumber[],
+	int NUM_SPA_FILES,
+	int SIZE
+)
 {
-	int lowerIndex = wavenumToIndex(upperBound, wavenumber, length); // Woops...that's confusing
-	int upperIndex = wavenumToIndex(lowerBound, wavenumber, length); // Higher wavenumbers have lower indices! That's how the data is ordered.
-    ofstream csvOutputFile (CSV_FILENAME, ios::out);
+	const char* funcDef = "void printToCSV(const char*, char**, float**, float [], int, int)";
+	ofstream csvOutputFile (CSV_FILENAME, ios::out);
     if(csvOutputFile.is_open()){
-	    for(int a = lowerIndex; a < upperIndex + 1; a++) {
-	        csvOutputFile << wavenumber[a] << ", " << IR_Data[a] << endl;
-	    }
-	    csvOutputFile.close();
+		// Headings
+		csvOutputFile << "Wavenumber, ";
+		for(int i = 0; i < NUM_SPA_FILES - 1; i++)
+			csvOutputFile << SPA_FILENAME[i] << ", ";
+		csvOutputFile << SPA_FILENAME[NUM_SPA_FILES - 1] << endl;
+
+		// Data
+		for(int i = 0; i < SIZE; i++)
+		{
+			csvOutputFile << wavenumber[i] << ", ";
+			for(int j = 0; j < NUM_SPA_FILES - 1; j++)
+				csvOutputFile << IR_Data[j][i] << ", ";
+			csvOutputFile << IR_Data[NUM_SPA_FILES - 1][i] << endl;
+		}
+		csvOutputFile.close();
 	} else {
-		cerr << "Error: printToCSV(const char*, float[], float[], int, int, int): Unable to open output file " << CSV_FILENAME << "." << endl;
+		cerr << "Error: " << funcDef << ": unable to open output file '" << CSV_FILENAME << "'.\n"
+			 << "    Does the file already exist?\n";
 		exit(1);
 	}
 	return;
@@ -83,6 +102,7 @@ void printToCSV
 	int lowerBound
 )
 {
+	const char* funcDef = "void printToCSV(const char*, char**, float**, float [], int, int, int, int)";
 	int lowerIndex = wavenumToIndex(upperBound, wavenumber, length);
 	int upperIndex = wavenumToIndex(lowerBound, wavenumber, length);
 	ofstream csvOutputFile (CSV_FILENAME, ios::out);
@@ -106,7 +126,8 @@ void printToCSV
 	}
 	else
 	{
-		cerr << "Error: printToCSV(const char*, char**, float**, float[], int, int, int, int): unable to open output file." << endl;
+		cerr << "Error: " << funcDef << ": unable to open output file '" << CSV_FILENAME << "'.\n"
+			 << "    Does the file already exist?\n";
 		exit(1);
 	}
 	return;

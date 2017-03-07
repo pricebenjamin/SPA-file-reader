@@ -185,8 +185,8 @@ int main(int argc, char* argv[])
     }
     else
     {
-        cerr << "Error: main(): scenario: no optional arguments used.\n";
-        cerr << "   This scenario is still under development.\n";
+        const char* RAW_CSV_FILENAME = "combinedRawData.CSV";
+        printToCSV(RAW_CSV_FILENAME, SPA_FILENAME, IR_DATA, WAVENUMBER, NUM_SPA_FILES, SIZE);
     }
 
     return 0;

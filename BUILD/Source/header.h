@@ -23,13 +23,22 @@ void printToCSV
 (
 	const char* CSV_FILENAME,
 	char** SPA_FILENAME,
+	float** IR_Data,
+	float wavenumber[],
+	int NUM_SPA_FILES,
+	int SIZE
+); // Used when no bounds specified
+void printToCSV
+(
+	const char* CSV_FILENAME,
+	char** SPA_FILENAME,
 	float** IR_Data, 
 	float wavenumber[], 
 	int NUM_SPA_FILES, 
 	int length, 
 	int upperBound, 
 	int lowerBound
-);
+); // Used when both bounds specified
 void readSPAFile(char* SPA_FILENAME, float IR_Data[], int length, int start);
 const char* createCSVFilename(const char* filename, string ubStr, string lbStr);
 // create-array.cpp
