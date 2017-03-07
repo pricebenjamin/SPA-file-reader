@@ -6,7 +6,7 @@
 using namespace std;
 
 // Ensure that ub > lb, ub <= MAX_WAVENUMBER, lb >= MIN_WAVENUMBER, etc...
-void checkBound(int* upperBound, int* lowerBound, int max, int min)
+void checkBound(int* upperBound, int* lowerBound, float max, float min)
 {
 	const char* funcDef = "checkBound(int*, int*, int, int)";
 	if(*upperBound == *lowerBound) // Dereference and compare
@@ -31,7 +31,7 @@ void checkBound(int* upperBound, int* lowerBound, int max, int min)
 	}
 }
 
-void checkBound(int bound, int MAX_WAVENUMBER, int MIN_WAVENUMBER)
+void checkBound(int bound, float MAX_WAVENUMBER, float MIN_WAVENUMBER)
 {
 	const char* funcDef = "void checkBound(int, int, int)";
     if(bound >= MAX_WAVENUMBER)
@@ -138,8 +138,9 @@ void computeAverages(float** AVG_DATA, float** IR_DATA, int numGroups, int group
 
 void computeConstCorr(float** CORR_DATA, float** IR_DATA, int NUM_SPA_FILES, float WAVENUMBER[], int SIZE, int ubCorr, int lbCorr)
 {
-    const char* funcDef = "computeConstCorr(float**, float**, int, int, int, int)";
-    float baseline[SIZE];
+    const char* funcDef = "void computeConstCorr(float**, float**, int, int, int, int)";
+    float* baseline = new (nothrow) float [SIZE];
+    checkIfNull(baseline, funcDef, "float* baseline");
     for(int i = 0; i < SIZE; i++)
     {
         float sum = 0;
@@ -169,5 +170,6 @@ void computeConstCorr(float** CORR_DATA, float** IR_DATA, int NUM_SPA_FILES, flo
     for(int i = 0; i < NUM_SPA_FILES; i++)
         for(int j = 0; j < SIZE; j++)
             CORR_DATA[i][j] = averageDiffOverInterval[i] + IR_DATA[i][j];
+    delete[] baseline;
     return;
 }
