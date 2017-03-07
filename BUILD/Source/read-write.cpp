@@ -28,14 +28,6 @@ void readSPAFile(char* SPA_FILENAME, float IR_Data[], int length, int start)
 	return;
 }
 
-// Append str to SPA_FILENAME
-// Made const in order to fix "invalid conversion from 'const char*' to 'char*' [-fpermissive]" error
-const char* appendStr(char* SPA_FILENAME, const char* str)
-{
-	string spaString = SPA_FILENAME;
-	return spaString.append(str).c_str();
-}
-
 // Print array to CSV file
 // No bounds specified: print entire spectrum
 void printToCSV
