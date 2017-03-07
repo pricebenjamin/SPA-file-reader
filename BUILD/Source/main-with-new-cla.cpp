@@ -174,8 +174,31 @@ int main(int argc, char* argv[])
         }
         else if (upperBoundSpecified || lowerBoundSpecified)
         { // SCENARIO: one bound given
-            cerr << "Error: main(): scenario: one bound specified.\n";
-            cerr << "    This scenario is still under development.\n";
+            string boundStr = ( upperBoundSpecified ? (string(".upperBound.") + ubStr) : (string(".lowerBound.") + lbStr) );
+            int bound = ( upperBoundSpecified ? upperBound : lowerBound );
+            const char* RAW_CSV_FILENAME = (string("combinedRawData") + boundStr + string(".CSV")).c_str();
+            printToCSV(RAW_CSV_FILENAME, SPA_FILENAME, IR_DATA, WAVENUMBER, NUM_SPA_FILES, SIZE, bound, upperBoundSpecified);
+
+            if(groupFiles)
+            {
+                computeAverages(AVG_DATA, IR_DATA, numGroups, groupSize, SIZE);
+                const char* AVG_CSV_FILENAME = (string("averagedData") + boundStr + string(".CSV")).c_str();
+                printToCSV(AVG_CSV_FILENAME, AVG_DATA_COL_TITLES, AVG_DATA, WAVENUMBER, numGroups, SIZE, bound, upperBoundSpecified);
+            }
+
+            if(useConstCorr)
+            {
+                computeConstCorr(CORR_DATA, IR_DATA, NUM_SPA_FILES, WAVENUMBER, SIZE, ubCorr, lbCorr);
+                const char* CORR_CSV_FILENAME = (string("constCorrData") + boundStr + string(".CSV")).c_str();
+                printToCSV(CORR_CSV_FILENAME, SPA_FILENAME, CORR_DATA, WAVENUMBER, NUM_SPA_FILES, SIZE, bound, upperBoundSpecified);
+            }
+
+            if(useConstCorr && groupFiles)
+            {
+                computeAverages(AVG_DATA, CORR_DATA, numGroups, groupSize, SIZE);
+                const char* AVG_CORR_CSV_FILENAME = (string("averagedCorrData") + boundStr + string(".CSV")).c_str();
+                printToCSV(AVG_CORR_CSV_FILENAME, AVG_DATA_COL_TITLES, AVG_DATA, WAVENUMBER, numGroups, SIZE, bound, upperBoundSpecified);
+            }
         }
         else
         { // SCENARIO: no bounds given

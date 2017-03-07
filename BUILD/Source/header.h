@@ -31,6 +31,17 @@ void printToCSV
 void printToCSV
 (
 	const char* CSV_FILENAME,
+	char** SPA_FILENAME, 
+	float** IR_Data,
+	float wavenumber[],
+	int NUM_SPA_FILES,
+	int SIZE,
+	int bound,
+	bool upperBoundSpecified
+); // Used when one bound specified
+void printToCSV
+(
+	const char* CSV_FILENAME,
 	char** SPA_FILENAME,
 	float** IR_Data, 
 	float wavenumber[], 

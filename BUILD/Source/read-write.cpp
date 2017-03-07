@@ -37,23 +37,7 @@ const char* appendStr(char* SPA_FILENAME, const char* str)
 }
 
 // Print array to CSV file
-void printToCSV(const char* CSV_FILENAME, float IR_Data[], float wavenumber[], int length)
-{
-	const char* funcDef = "void printToCSV(const char*, float [], float [], int)";
-    ofstream csvOutputFile (CSV_FILENAME, ios::out);
-    if(csvOutputFile.is_open()){
-	    for(int a = 0; a < length; a++) {
-	        csvOutputFile << wavenumber[a] << ", " << IR_Data[a] << endl;
-	    }
-	    csvOutputFile.close();
-	} else {
-		cerr << "Error: " << funcDef << ": Unable to open CSV output file " << CSV_FILENAME << "." << endl;
-		cerr << "    Does the file already exist?" << endl;
-		exit(1);
-	}
-	return;
-}
-
+// No bounds specified: print entire spectrum
 void printToCSV
 (
 	const char* CSV_FILENAME,
@@ -90,6 +74,58 @@ void printToCSV
 	return;
 }
 
+// One bound specified
+void printToCSV
+(
+	const char* CSV_FILENAME,
+	char** SPA_FILENAME, 
+	float** IR_Data,
+	float wavenumber[],
+	int NUM_SPA_FILES,
+	int SIZE,
+	int bound,
+	bool upperBoundSpecified
+)
+{
+	const char* funcDef = "void printToCSV(const char*, char**, float**, float [], int, int, int, bool)";
+	int boundIndex = wavenumToIndex(bound, wavenumber, SIZE);
+	ofstream csvOutputFile (CSV_FILENAME, ios::out);
+	if(csvOutputFile.is_open())
+	{
+		// Headings
+		csvOutputFile << "Wavenumber, ";
+		for(int i = 0; i < NUM_SPA_FILES - 1; i++)
+			csvOutputFile << SPA_FILENAME[i] << ", ";
+		csvOutputFile << SPA_FILENAME[NUM_SPA_FILES - 1] << endl;
+		// Data
+		if(upperBoundSpecified)
+			for(int i = boundIndex; i < SIZE; i++)
+			{
+				csvOutputFile << wavenumber[i] << ", ";
+				for(int j = 0; j < NUM_SPA_FILES - 1; j++)
+					csvOutputFile << IR_Data[j][i] << ", ";
+				csvOutputFile << IR_Data[NUM_SPA_FILES - 1][i] << endl;
+			}
+		else
+			for(int i = 0; i < boundIndex + 1; i++)
+			{
+				csvOutputFile << wavenumber[i] << ", ";
+				for(int j = 0; j < NUM_SPA_FILES - 1; j++)
+					csvOutputFile << IR_Data[j][i] << ", ";
+				csvOutputFile << IR_Data[NUM_SPA_FILES - 1][i] << endl;
+			}
+		csvOutputFile.close();
+	}
+	else
+	{
+		cerr << "Error: " << funcDef << ": unable to open output file '" << CSV_FILENAME << "'.\n"
+			 << "    Does the file already exist?\n";
+		exit(1);
+	}
+	return;
+}
+
+// Both bound specified: print region of interest
 void printToCSV
 (
 	const char* CSV_FILENAME,
