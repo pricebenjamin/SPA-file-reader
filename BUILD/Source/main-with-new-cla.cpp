@@ -24,7 +24,7 @@ const float STEP_SIZE = (MAX_WAVENUMBER - MIN_WAVENUMBER) / (SIZE - 1);	// inver
 
 void printUsage(char* PROG_NAME)
 {
-	cerr << "USAGE: " << PROG_NAME << "  [ OPTIONS ... ] file1 [ file2 ... ]\n"
+	cerr << "USAGE: " << PROG_NAME << "  [options...] file...\n"
          << "DESCRIPTION:\n"
          << "    Reads % transmission or % absorption values from SPA files created by Thermo\n"
          << "    Scientific OMNIC software and writes them to a CSV file. Options allow the user to\n"
@@ -119,7 +119,7 @@ int main(int argc, char* argv[])
     float** AVG_DATA = ( groupFiles ?
         createFloatArray(numGroups, SIZE, "float** AVG_DATA") : nullptr );
     float** CORR_DATA = ( useConstCorr ?
-        (createFloatArray(NUM_SPA_FILES, SIZE, "float** CORR_DATA")) : nullptr );
+        createFloatArray(NUM_SPA_FILES, SIZE, "float** CORR_DATA") : nullptr );
     
     string ubStr = ( upperBoundSpecified ?
         getStrAfter(string(argv[optionalArgIndices[UB_ARG_INDEX]]), ARG_VAL_DIV_CHAR) : "NULL_STRING" );
@@ -233,5 +233,21 @@ int main(int argc, char* argv[])
         printToCSV(RAW_CSV_FILENAME, SPA_FILENAME, IR_DATA, WAVENUMBER, NUM_SPA_FILES, SIZE);
     }
 
+    delete[] SPA_FILENAME;
+    for(int i = 0; i < NUM_SPA_FILES; i++)
+    {
+        delete[] IR_DATA[i];
+        if(useConstCorr) delete[] CORR_DATA[i];
+    }
+
+    delete[] IR_DATA;
+    if(useConstCorr) delete[] CORR_DATA;
+    if(groupFiles)
+    {
+        delete[] AVG_DATA_COL_TITLES;
+        for(int i = 0; i < numGroups; i++)
+            delete[] AVG_DATA[i];
+        delete[] AVG_DATA;
+    }
     return 0;
 }
