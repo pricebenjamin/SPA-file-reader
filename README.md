@@ -10,9 +10,9 @@ Currently, this program is entirely capable of converting the SPA files found in
 
 Once compiled, you can view the usage statement from the command-line in Windows or Linux by executing the program without any arguments, or with the optional arguments `-h`, `-?`, or `--help`.
 
-### Compiling the latest source files (./BUILD/Source/)
+### Compiling the latest source files (located in BUILD/Source)
 
-This program has been successfully compiled on Linux (WSL running Ubuntu 14.04.5 LTS) using g++ and on Windows using Visual Studio Build Tools 2017 RC. Once the repository has been cloned, users should change directory into the ./BUILD/Source/ folder from the command-line. From there, they can execute the following commands to compile the source files into an executable.
+This program has been successfully compiled on Linux (WSL running Ubuntu 14.04.5 LTS) using g++ and on Windows using Visual Studio Build Tools 2017 RC. Once the repository has been cloned, users should change directory into the `./BUILD/Source/` folder from the command-line. From there, they can execute the following commands to compile the source files into an executable.
 
 #### On Windows (Developer Command Prompt for VS 2017 RC)
 ```
@@ -24,7 +24,7 @@ This program has been successfully compiled on Linux (WSL running Ubuntu 14.04.5
 $ g++ -std=c++11 main-with-new-cla.cpp data-processing.cpp parse-command-line-args.cpp read-write.cpp str-to-int.cpp -o SPA-file-reader
 ```
 
-### Using the old source files (./BUILD/Source/Old-Source-Files/)
+### Using the old source files (located in BUILD/Source/Old-Source-Files)
 
 Assuming a user has access to the g++ compiler, they may compile and run this program by following the provided steps.
 
