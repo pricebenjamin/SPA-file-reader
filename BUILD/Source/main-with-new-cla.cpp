@@ -15,12 +15,13 @@ const int GROUP_FILES_ARG_INDEX = 3;
 const char ARG_VAL_DIV_CHAR = '=';
 const char VAL_VAL_DIV_CHAR = '-';
 
-const int HEX_START = 0x49C;		// Hex address just before first byte of first datum in SPA file
-const int HEX_END = 0x036929;		// Hex address of last byte of last datum
-const int SIZE = (HEX_END - HEX_START) / 4;	// Number of data in SPA file (4 bytes per datum)
+const int HEX_START = 0x49C;		// Hex address of first byte of first datum in SPA file
+const int HEX_END = 0x036927;		// Hex address of last byte of last datum
+const int SIZE = (HEX_END - HEX_START + 1) / 4;	// Number of data in SPA file (+ 1 includes last byte, / 4 bytes per float)
 const float MAX_WAVENUMBER =  3999.9907;	// inverse cm
 const float MIN_WAVENUMBER = 649.9812;		// inverse cm
-const float STEP_SIZE = (MAX_WAVENUMBER - MIN_WAVENUMBER) / (SIZE - 1);	// inverse cm; distance between sequential data
+const float STEP_SIZE = (MAX_WAVENUMBER - MIN_WAVENUMBER) / (SIZE - 1);	// inverse cm; distance between sequential data 
+                                                                        // (- 1 ensures that last datum gets last wavenum)
 
 void printUsage(char* PROG_NAME)
 {
