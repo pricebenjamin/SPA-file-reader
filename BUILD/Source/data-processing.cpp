@@ -173,7 +173,7 @@ void computeConstCorr(float** CORR_DATA, float** IR_DATA, int NUM_SPA_FILES, flo
 
     delete[] baseline;
     delete[] averageDiffOverInterval;
-    for(int i = 0; i < NUM_SPA_FILES)
+    for(int i = 0; i < NUM_SPA_FILES; i++)
         delete[] difference[i];
     delete[] difference;
     
