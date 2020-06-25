@@ -39,6 +39,15 @@ commands to compile the source files into an executable.
 ```
 
 #### On Linux
+
+##### Using GNU `make` (recommended)
+```
+$ cd src
+$ make        # Create the `spa-reader` executable
+$ make clean  # (Optional.) Removes .o object files from the directory
+```
+
+##### Using `g++`
 ```
 $ g++ -std=c++11 main-with-new-cla.cpp data-processing.cpp parse-command-line-args.cpp print-usage.cpp read-write.cpp str-to-int.cpp -o spa-reader
 ```
