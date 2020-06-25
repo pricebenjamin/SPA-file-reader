@@ -33,11 +33,6 @@ using Visual Studio Build Tools 2017 RC. Once the repository has been cloned, us
 directory into the `src` folder from the command-line. From there, they can execute the following
 commands to compile the source files into an executable.
 
-#### On Windows (Developer Command Prompt for VS 2017 RC)
-```
-> cl /EHsc main-with-new-cla.cpp data-processing.cpp parse-command-line-args.cpp print-usage.cpp read-write.cpp str-to-int.cpp /link /out:spa-reader.exe
-```
-
 #### On Linux
 
 ##### Using GNU `make` (recommended)
@@ -50,6 +45,11 @@ $ make clean  # (Optional.) Removes .o object files from the directory
 ##### Using `g++`
 ```
 $ g++ -std=c++11 main-with-new-cla.cpp data-processing.cpp parse-command-line-args.cpp print-usage.cpp read-write.cpp str-to-int.cpp -o spa-reader
+```
+
+#### On Windows (Developer Command Prompt for VS 2017 RC)
+```
+> cl /EHsc main-with-new-cla.cpp data-processing.cpp parse-command-line-args.cpp print-usage.cpp read-write.cpp str-to-int.cpp /link /out:spa-reader.exe
 ```
 
 ### Using the old source files (located in `src/old`)
