@@ -1,11 +1,19 @@
-#include "header.h"
+#include "data-processing.h"
+#include "parse-command-line-args.h"
+#include "print-usage.h"
+#include "read-write.h"
+#include "str-to-int.h"
 
-const string UB_ARG_STR = "--upper-bound";
-const string LB_ARG_STR = "--lower-bound";
-const string UB_ARG_SHORT_STR = "-u";
-const string LB_ARG_SHORT_STR = "-l";
-const string CONST_CORR_STR = "--calculate-const-corr";
-const string GROUP_FILES_STR = "--group-files";
+#include <iostream>
+
+// TODO(ben): stdlib imports
+
+const std::string UB_ARG_STR = "--upper-bound";
+const std::string LB_ARG_STR = "--lower-bound";
+const std::string UB_ARG_SHORT_STR = "-u";
+const std::string LB_ARG_SHORT_STR = "-l";
+const std::string CONST_CORR_STR = "--calculate-const-corr";
+const std::string GROUP_FILES_STR = "--group-files";
 
 const int UB_ARG_INDEX = 0;
 const int LB_ARG_INDEX = 1;
@@ -23,32 +31,6 @@ const float MIN_WAVENUMBER = 649.9812;		// inverse cm
 const float STEP_SIZE = (MAX_WAVENUMBER - MIN_WAVENUMBER) / (SIZE - 1);	// inverse cm; distance between sequential data 
                                                                         // (- 1 ensures that last datum gets last wavenum)
 
-void printUsage(char* PROG_NAME)
-{
-	cerr << "USAGE: " << PROG_NAME << "  [options...] file...\n"
-         << "DESCRIPTION:\n"
-         << "    Reads % transmission or % absorption values from SPA files created by Thermo\n"
-         << "    Scientific OMNIC software and writes them to a CSV file. Options allow the user to\n"
-         << "    save only a specified region of each spectrum in the CSV file, calculate and apply a\n"
-         << "    constant correction to each spectrum (saved in separate file), and take the average\n"
-         << "    of multiple spectra by grouping files (saved in separate file).\n"
-         << "OPTIONS:\n"
-         << "    -h, -?, --help                 Print this usage statement.\n"
-	     << "    -u=N1, --upper-bound=N1        Defines the upper bound N1 of the wavenumber region\n"
-         << "                                     over which data will be saved.\n"
-	     << "    -l=N2, --lower-bound=N2        Defines the lower bound N2 of the wavenumber region\n"
-         << "                                     over which data will be saved.\n"
-         << "    --calculate-const-corr=N3-N4   Define a wavenumber region between N3 and N4 which\n"
-         << "                                     will be used to calculate a constant correction.\n"
-         << "                                     The corrections will try to move each spectrum\n"
-         << "                                     up or down in order to minimize the distance\n"
-         << "                                     between spectra in this region.\n"
-         << "    --group-files=N5               Define the number of files N5 which will be grouped\n"
-         << "                                     and averaged. (Expects that user passes a multiple\n"
-         << "                                     of N5 total files.)\n";
-	return;
-}
-
 int main(int argc, char* argv[])
 {
     // Expected usage of this program:
@@ -62,7 +44,7 @@ int main(int argc, char* argv[])
     }
     else
     {
-	    string argv_1 = argv[1];
+        std::string argv_1 = argv[1];
 	    if(argv_1 == "-h" || argv_1 == "-?" || argv_1 == "--help")
 	    {
 	    	printUsage(argv[0]);
@@ -99,17 +81,20 @@ int main(int argc, char* argv[])
     // If no acceptable optional arguments were used, we will assume that all arguments are SPA files, and begin reading them in
     char** SPA_FILENAME = createSPAFileArray(NUM_SPA_FILES, numOptArgsGiven, argv, "char** SPA_FILENAME");
     float** IR_DATA = createFloatArray(NUM_SPA_FILES, SIZE, "float** IR_DATA");
+
     for(int i = 0; i < NUM_SPA_FILES; i++)
         readSPAFile(SPA_FILENAME[i], IR_DATA[i], SIZE, HEX_START);
+
 	float WAVENUMBER[SIZE]; // Array to store corresponding wavenumber (assumed to be the same for all input files)
+    
 	for(int i = 0; i < SIZE; i++)
 		WAVENUMBER[i] = MAX_WAVENUMBER - (STEP_SIZE * i);
 
     int groupSize = (groupFiles ? 
-        (strToInt(getStrAfter(string(argv[optionalArgIndices[GROUP_FILES_ARG_INDEX]]), ARG_VAL_DIV_CHAR))) : 1);
+        (strToInt(getStrAfter(std::string(argv[optionalArgIndices[GROUP_FILES_ARG_INDEX]]), ARG_VAL_DIV_CHAR))) : 1);
     if(groupFiles && NUM_SPA_FILES % groupSize != 0)
     {
-        cerr << "Error: main(): group files flag given, but given number of SPA files cannot be divided by group size.\n";
+        std::cerr << "Error: main(): group files flag given, but given number of SPA files cannot be divided by group size.\n";
         exit(1);
     }
 
@@ -122,10 +107,10 @@ int main(int argc, char* argv[])
     float** CORR_DATA = ( useConstCorr ?
         createFloatArray(NUM_SPA_FILES, SIZE, "float** CORR_DATA") : nullptr );
     
-    string ubStr = ( upperBoundSpecified ?
-        getStrAfter(string(argv[optionalArgIndices[UB_ARG_INDEX]]), ARG_VAL_DIV_CHAR) : "NULL_STRING" );
-    string lbStr = ( lowerBoundSpecified ?
-        getStrAfter(string(argv[optionalArgIndices[LB_ARG_INDEX]]), ARG_VAL_DIV_CHAR) : "NULL_STRING" );
+    std::string ubStr = ( upperBoundSpecified ?
+        getStrAfter(std::string(argv[optionalArgIndices[UB_ARG_INDEX]]), ARG_VAL_DIV_CHAR) : "NULL_STRING" );
+    std::string lbStr = ( lowerBoundSpecified ?
+        getStrAfter(std::string(argv[optionalArgIndices[LB_ARG_INDEX]]), ARG_VAL_DIV_CHAR) : "NULL_STRING" );
     int upperBound = ( upperBoundSpecified ?
         strToInt(ubStr) : 0 );
     int lowerBound = ( lowerBoundSpecified ?
@@ -137,9 +122,9 @@ int main(int argc, char* argv[])
         upperBoundSpecified ? checkBound(upperBound, MAX_WAVENUMBER, MIN_WAVENUMBER) : checkBound(lowerBound, MAX_WAVENUMBER, MIN_WAVENUMBER);
     
     int ubCorr = ( useConstCorr ?
-        strToInt(truncateStrAt(getStrAfter(string(argv[optionalArgIndices[CONST_CORR_ARG_INDEX]]), ARG_VAL_DIV_CHAR), VAL_VAL_DIV_CHAR)) : 0 );
+        strToInt(truncateStrAt(getStrAfter(std::string(argv[optionalArgIndices[CONST_CORR_ARG_INDEX]]), ARG_VAL_DIV_CHAR), VAL_VAL_DIV_CHAR)) : 0 );
     int lbCorr = ( useConstCorr ?
-        strToInt(getStrAfter(getStrAfter(string(argv[optionalArgIndices[CONST_CORR_ARG_INDEX]]), ARG_VAL_DIV_CHAR), VAL_VAL_DIV_CHAR)) : 0 );
+        strToInt(getStrAfter(getStrAfter(std::string(argv[optionalArgIndices[CONST_CORR_ARG_INDEX]]), ARG_VAL_DIV_CHAR), VAL_VAL_DIV_CHAR)) : 0 );
     if(useConstCorr) checkBound(&ubCorr, &lbCorr, MAX_WAVENUMBER, MIN_WAVENUMBER);
 
     // Output requested data
@@ -175,29 +160,29 @@ int main(int argc, char* argv[])
         }
         else if (upperBoundSpecified || lowerBoundSpecified)
         { // SCENARIO: one bound given
-            string boundStr = ( upperBoundSpecified ? (string(".upperBound.") + ubStr) : (string(".lowerBound.") + lbStr) );
+            std::string boundStr = ( upperBoundSpecified ? (std::string(".upperBound.") + ubStr) : (std::string(".lowerBound.") + lbStr) );
             int bound = ( upperBoundSpecified ? upperBound : lowerBound );
-            const char* RAW_CSV_FILENAME = (string("combinedRawData") + boundStr + string(".CSV")).c_str();
+            const char* RAW_CSV_FILENAME = (std::string("combinedRawData") + boundStr + std::string(".CSV")).c_str();
             printToCSV(RAW_CSV_FILENAME, SPA_FILENAME, IR_DATA, WAVENUMBER, NUM_SPA_FILES, SIZE, bound, upperBoundSpecified);
 
             if(groupFiles)
             {
                 computeAverages(AVG_DATA, IR_DATA, numGroups, groupSize, SIZE);
-                const char* AVG_CSV_FILENAME = (string("averagedData") + boundStr + string(".CSV")).c_str();
+                const char* AVG_CSV_FILENAME = (std::string("averagedData") + boundStr + std::string(".CSV")).c_str();
                 printToCSV(AVG_CSV_FILENAME, AVG_DATA_COL_TITLES, AVG_DATA, WAVENUMBER, numGroups, SIZE, bound, upperBoundSpecified);
             }
 
             if(useConstCorr)
             {
                 computeConstCorr(CORR_DATA, IR_DATA, NUM_SPA_FILES, WAVENUMBER, SIZE, ubCorr, lbCorr);
-                const char* CORR_CSV_FILENAME = (string("constCorrData") + boundStr + string(".CSV")).c_str();
+                const char* CORR_CSV_FILENAME = (std::string("constCorrData") + boundStr + std::string(".CSV")).c_str();
                 printToCSV(CORR_CSV_FILENAME, SPA_FILENAME, CORR_DATA, WAVENUMBER, NUM_SPA_FILES, SIZE, bound, upperBoundSpecified);
             }
 
             if(useConstCorr && groupFiles)
             {
                 computeAverages(AVG_DATA, CORR_DATA, numGroups, groupSize, SIZE);
-                const char* AVG_CORR_CSV_FILENAME = (string("averagedCorrData") + boundStr + string(".CSV")).c_str();
+                const char* AVG_CORR_CSV_FILENAME = (std::string("averagedCorrData") + boundStr + std::string(".CSV")).c_str();
                 printToCSV(AVG_CORR_CSV_FILENAME, AVG_DATA_COL_TITLES, AVG_DATA, WAVENUMBER, numGroups, SIZE, bound, upperBoundSpecified);
             }
         }

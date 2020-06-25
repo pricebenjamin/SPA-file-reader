@@ -1,11 +1,17 @@
-#include "header.h"
+#include "parse-command-line-args.h"
+#include "print-usage.h"
+#include "str-to-int.h"
 
-const string UB_ARG_STR = "--upper-bound";
-const string LB_ARG_STR = "--lower-bound";
-const string UB_ARG_SHORT_STR = "-u";
-const string LB_ARG_SHORT_STR = "-l";
-const string CONST_CORR_STR = "--calculate-const-corr";
-const string GROUP_FILES_STR = "--group-files";
+#include <cstdlib>
+#include <iostream>
+#include <string>
+
+const std::string UB_ARG_STR = "--upper-bound";
+const std::string LB_ARG_STR = "--lower-bound";
+const std::string UB_ARG_SHORT_STR = "-u";
+const std::string LB_ARG_SHORT_STR = "-l";
+const std::string CONST_CORR_STR = "--calculate-const-corr";
+const std::string GROUP_FILES_STR = "--group-files";
 
 const int UB_ARG_INDEX = 0;
 const int LB_ARG_INDEX = 1;
@@ -28,19 +34,19 @@ void checkIfAlreadyGiven(int argIndex, bool* optionalArgs[], bool* usedOptionalA
         switch(argIndex)
         {
             case UB_ARG_INDEX: 
-                cerr << "Error: " << funcDef << ": Upper bound specified more than once.\n";
+                std::cerr << "Error: " << funcDef << ": Upper bound specified more than once.\n";
                 break;
             case LB_ARG_INDEX:
-                cerr << "Error: " << funcDef << ": Lower bound specified more than once.\n";
+                std::cerr << "Error: " << funcDef << ": Lower bound specified more than once.\n";
                 break;
             case CONST_CORR_ARG_INDEX:
-                cerr << "Error: " << funcDef << ": Calculate constant correction flag used more than once.\n";
+                std::cerr << "Error: " << funcDef << ": Calculate constant correction flag used more than once.\n";
                 break;
             case GROUP_FILES_ARG_INDEX:
-                cerr << "Error: " << funcDef << ": Group files flag used more than once.\n";
+                std::cerr << "Error: " << funcDef << ": Group files flag used more than once.\n";
                 break;
             default:
-                cerr << "Error: " << funcDef << ": invalid argument index.\n";
+                std::cerr << "Error: " << funcDef << ": invalid argument index.\n";
         }
         exit(1);
     }
@@ -59,8 +65,8 @@ bool usingOptionalArgs
     bool usedOptionalArgs = false;
     for(int i = 0; i < argc; i++)
     {
-        string fullArg = argv[i];
-        string argName = truncateStrAt(fullArg, ARG_VAL_DIV_CHAR);
+        std::string fullArg = argv[i];
+        std::string argName = truncateStrAt(fullArg, ARG_VAL_DIV_CHAR);
         if(argName == UB_ARG_SHORT_STR || argName == UB_ARG_STR)
         {
             checkIfAlreadyGiven(UB_ARG_INDEX, optionalArgs, &usedOptionalArgs);
@@ -91,7 +97,7 @@ void checkArgIndex(const int NUM_OPT_ARGS, int optionalArgIndices[], int maxInde
     for(int i = 0; i < NUM_OPT_ARGS; i++)
         if(optionalArgIndices[i] > maxIndex)
         {
-            string optArg;
+            std::string optArg;
             switch(i)
             {
                 case UB_ARG_INDEX: optArg = UB_ARG_STR; break;
@@ -99,9 +105,9 @@ void checkArgIndex(const int NUM_OPT_ARGS, int optionalArgIndices[], int maxInde
                 case CONST_CORR_ARG_INDEX: optArg = CONST_CORR_STR; break;
                 case GROUP_FILES_ARG_INDEX: optArg = GROUP_FILES_STR; break;
             }
-            cerr << "Error: " << funcDef << ": index of optional argument '" << optArg << "' is larger than expected.\n\n";
+            std::cerr << "Error: " << funcDef << ": index of optional argument '" << optArg << "' is larger than expected.\n\n";
             printUsage(argv[0]);
-            exit(1);
+            std::exit(1);
         }
 }
 
